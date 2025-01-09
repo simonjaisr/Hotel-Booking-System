@@ -1,0 +1,554 @@
+package projectleap;
+
+public class Booking {
+    private int bookingId;
+    private int roomId;
+    private int guestId;
+    private String checkInDate;
+    private String checkOutDate;
+    private double totalPrice;
+    private String status;
+
+    
+    public Booking(int bookingId, int roomId, int guestId, String checkInDate, String checkOutDate, double totalPrice, String status) {
+        this.bookingId = bookingId;
+        this.roomId = roomId;
+        this.guestId = guestId;
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+        this.totalPrice = totalPrice;
+        this.status = status;
+    }
+
+   
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public int getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(int guestId) {
+        this.guestId = guestId;
+    }
+
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}
+
+
+
+
+package projectleap;
+public class Guest {
+    private int guestId;
+    private String name;
+    private String email;
+    private String phoneNumber;
+
+    // Constructor
+    public Guest(int guestId, String name, String email, String phoneNumber) {
+        this.guestId = guestId;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    // Getters and Setters
+    public int getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(int guestId) {
+        this.guestId = guestId;
+    }
+
+    public  String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+}
+
+
+package projectleap;
+
+public class Room {
+    private int roomId;
+    private String roomNumber;
+    private String roomType;
+    private double pricePerNight;
+    private boolean isAvailable;
+
+    // Constructor
+    public Room(int roomId, String roomNumber, String roomType, double pricePerNight, boolean isAvailable) {
+        this.roomId = roomId;
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.pricePerNight = pricePerNight;
+        this.isAvailable = isAvailable;
+    }
+
+    // Getters and Setters
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public String getRoomNumber() {
+        return roomNumber;
+    }
+
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public String getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(String roomType) {
+        this.roomType = roomType;
+    }
+
+    public double getPricePerNight() {
+        return pricePerNight;
+    }
+
+    public void setPricePerNight(double pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+}
+
+
+
+package projectleap;
+import java.util.Scanner;  
+import java.util.ArrayList;  
+import java.util.List;  
+import java.sql.Connection;  
+import java.sql.DriverManager;  
+import java.sql.PreparedStatement;  
+import java.sql.ResultSet; 
+import java.sql.SQLException;  
+import java.text.SimpleDateFormat;  
+import java.util.Date;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+import java.io.BufferedWriter;
+
+public class HotelBookingSystem {
+
+    private Connection conn;
+
+    public HotelBookingSystem() {
+        try {
+           
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/hotel", "root", "root");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+  
+    public void addRoom(Room room) {
+        try {
+            String query = "INSERT INTO Room (room_number, room_type, price_per_night, is_available) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, room.getRoomNumber());
+            stmt.setString(2, room.getRoomType());
+            stmt.setDouble(3, room.getPricePerNight());
+            stmt.setBoolean(4, room.isAvailable());
+            stmt.executeUpdate();
+            System.out.println("Room added successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+   
+    public Room getRoomById(int roomId) {
+        try {
+            String query = "SELECT * FROM Room WHERE room_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, roomId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Room(
+                    rs.getInt("room_id"),
+                    rs.getString("room_number"),
+                    rs.getString("room_type"),
+                    rs.getDouble("price_per_night"),
+                    rs.getBoolean("is_available")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Book a room
+    public void bookRoom(Booking booking) {
+    	   Scanner scanner = new Scanner(System.in);
+        try {
+            
+            String checkGuestQuery = "SELECT COUNT(*) FROM Guest WHERE guest_id = ?";
+            PreparedStatement checkStmt = conn.prepareStatement(checkGuestQuery);
+            checkStmt.setInt(1, booking.getGuestId());
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                int guestCount = rs.getInt(1);
+                if (guestCount == 0) {
+                    System.out.println("inserting new guest");
+                    String insertGuestQuery = "INSERT INTO Guest (guest_id, name, email, phone_number) VALUES (?, ?, ?, ?)";
+                    PreparedStatement insertStmt = conn.prepareStatement(insertGuestQuery);
+                    System.out.print("Enter guest name: ");
+                    String name = scanner.nextLine();
+
+                    System.out.print("Enter guest email: ");
+                    String mail = scanner.nextLine();
+
+                    System.out.print("Enter guest phone number: ");
+                    String phone = scanner.nextLine();
+                    insertStmt.setInt(1, booking.getGuestId());
+                    insertStmt.setString(2, name);
+                    insertStmt.setString(3, mail); 
+                    insertStmt.setString(4, phone); 
+                    insertStmt.executeUpdate();
+                    System.out.println("New guest added to the system.");
+                }
+            }
+
+           
+            String query = "INSERT INTO Booking (room_id, guest_id, check_in_date, check_out_date, total_price, status) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, booking.getRoomId());
+            stmt.setInt(2, booking.getGuestId());
+            stmt.setString(3, booking.getCheckInDate());
+            stmt.setString(4, booking.getCheckOutDate());
+            stmt.setDouble(5, booking.getTotalPrice());
+            stmt.setString(6, booking.getStatus());
+            stmt.executeUpdate();
+
+            
+            String updateRoom = "UPDATE Room SET is_available = false WHERE room_id = ?";
+            PreparedStatement updateStmt = conn.prepareStatement(updateRoom);
+            updateStmt.setInt(1, booking.getRoomId());
+            updateStmt.executeUpdate();
+
+            System.out.println("Booking confirmed!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+   
+    public void cancelBooking(int bookingId) {
+        try {
+            
+            String query = "UPDATE Booking SET status = 'Cancelled' WHERE booking_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, bookingId);
+            stmt.executeUpdate();
+
+           
+            String roomQuery = "SELECT room_id FROM Booking WHERE booking_id = ?";
+            PreparedStatement roomStmt = conn.prepareStatement(roomQuery);
+            roomStmt.setInt(1, bookingId);
+            ResultSet rs = roomStmt.executeQuery();
+
+            if (rs.next()) {
+                int roomId = rs.getInt("room_id");
+
+              
+                String updateRoom = "UPDATE Room SET is_available = true WHERE room_id = ?";
+                PreparedStatement updateRoomStmt = conn.prepareStatement(updateRoom);
+                updateRoomStmt.setInt(1, roomId);
+                updateRoomStmt.executeUpdate();
+            }
+
+            System.out.println("Booking cancelled!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+
+    public void processPayment(Payment payment) {
+        try {
+           
+            String query = "INSERT INTO Payment (booking_id, payment_date, amount, payment_method) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+           
+            stmt.setInt(1, payment.getBookingId());
+            stmt.setString(2, new SimpleDateFormat("yyyy-MM-dd").format(payment.getPaymentDate()));  // Format payment date
+            stmt.setDouble(3, payment.getAmount());
+            stmt.setString(4, payment.getPaymentMethod());
+
+            
+            stmt.executeUpdate();
+             
+           
+            System.out.println("Payment processed successfully!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printallpayments() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("all_payments.txt"))) {
+            String query = "SELECT * FROM Payment";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+
+            writer.write("All Payment Records:\n");
+            writer.write("---------------------------------------------------\n");
+
+            while (rs.next()) {
+                int bookingId = rs.getInt("booking_id");
+                String paymentDate = rs.getString("payment_date");
+                double amount = rs.getDouble("amount");
+                String paymentMethod = rs.getString("payment_method");
+
+                writer.write("Booking ID: " + bookingId + "\n");
+                writer.write("Payment Date: " + paymentDate + "\n");
+                writer.write("Amount: " + amount + "\n");
+                writer.write("Payment Method: " + paymentMethod + "\n");
+                writer.write("---------------------------------------------------\n");
+            }
+
+            System.out.println("All payment records have been written to 'all_payments.txt'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        HotelBookingSystem system = new HotelBookingSystem();
+
+        while (true) {
+        	System.out.println("------HOTEL BOOKING-------");
+            System.out.println("1. Add Room");
+            System.out.println("2. Book Room");
+            System.out.println("3. Cancel Booking");
+            System.out.println("4.payment");
+            System.out.println("5.print all payments");
+        
+            System.out.println("6. Exit");
+            System.out.println("-------------------------");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                   
+                    System.out.print("Enter Room Number: ");
+                    String roomNumber = scanner.next();
+                    System.out.print("Enter Room Type: ");
+                    String roomType = scanner.next();
+                    System.out.print("Enter Price per Night: ");
+                    double price = scanner.nextDouble();
+                    system.addRoom(new Room(0, roomNumber, roomType, price, true));
+                    break;
+
+                case 2:
+                    
+                    System.out.print("Enter Room ID: ");
+                    int roomId = scanner.nextInt();
+                    System.out.print("Enter Guest ID: ");
+                    int guestId = scanner.nextInt();
+                    System.out.print("Enter Check-in Date (yyyy-mm-dd): ");
+                    String checkIn = scanner.next();
+                    System.out.print("Enter Check-out Date (yyyy-mm-dd): ");
+                    String checkOut = scanner.next();
+                    System.out.print("Enter Total Price: ");
+                    double totalPrice = scanner.nextDouble();
+                    system.bookRoom(new Booking(0, roomId, guestId, checkIn, checkOut, totalPrice, "Confirmed"));
+                    break;
+
+                case 4:
+                    
+                    System.out.print("Enter Booking ID for payment: ");
+                    int paymentBookingId = scanner.nextInt();
+                    System.out.print("Enter payment amount: ");
+                    double amount = scanner.nextDouble();
+                    System.out.print("Enter payment method (e.g., Credit Card, Cash): ");
+                    scanner.nextLine(); 
+                    String paymentMethod = scanner.nextLine();
+
+               
+                    Payment payment = new Payment(paymentBookingId, new Date(), amount, paymentMethod);
+                    system.processPayment(payment);
+                    break;
+                case 3:
+                    
+                    System.out.print("Enter Booking ID: ");
+                    int bookingId = scanner.nextInt();
+                    system.cancelBooking(bookingId);
+                    break;
+                case 5:
+                	int pass=9787;
+                	System.out.println("enter admin password");
+                	int a=scanner.nextInt();
+                	if(pass==a) {
+                	
+                    system.printallpayments(); 
+                    break;
+                	}
+                	else {
+                		System.out.println("invalid pasword");
+                		break;
+                	}
+                    
+                case 6:
+                	System.out.println("hotel closed");
+                    System.exit(0);
+              
+              
+                	
+            }
+        }
+    }
+}
+
+
+package projectleap;
+
+import java.util.Date;
+
+public class Payment {
+    private int paymentId;  
+    private int bookingId;
+    private Date paymentDate;
+    private double amount;
+    private String paymentMethod;
+
+    public Payment(int bookingId, Date paymentDate, double amount, String paymentMethod) {
+        this.bookingId = bookingId;
+        this.paymentDate = paymentDate;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+    }
+
+    // Getters and Setters
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    public int getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+}
