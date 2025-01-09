@@ -1,0 +1,66 @@
+ create database hotel_booking_system;
+use hotel_booking_system;
+Database changed
+
+create table room (room_id int primary key,room_number varchar(100)room_type Varchar(20),price_per_night Decimal(10, 2),is_available boolean);
+
+create table guest(guest_id int primary key,name varchar(100),email varchar(100),phone_number varchar(15));
+
+
+create table booking (booking_id int primary key auto_increment,room_id int,guest_id int,check_in_date date,check_out_date date,total_price decimal(10, 2),status varchar(20),foreign key (room_id) references room(room_id),foreign key (guest_id) references guest(guest_id));
+
+ create table payment ( payment_id int primary key auto_increment, booking_id int, payment_date date, amount decimal(10, 2), payment_method varchar(50), foreign key (booking_id) references booking(booking_id) );
+
+
+
+ desc booking;
++----------------+---------------+------+-----+---------+----------------+
+| Field          | Type          | Null | Key | Default | Extra          |
++----------------+---------------+------+-----+---------+----------------+
+| booking_id     | int           | NO   | PRI | NULL    | auto_increment |
+| room_id        | int           | YES  | MUL | NULL    |                |
+| guest_id       | int           | YES  | MUL | NULL    |                |
+| check_in_date  | date          | YES  |     | NULL    |                |
+| check_out_date | date          | YES  |     | NULL    |                |
+| total_price    | decimal(10,2) | YES  |     | NULL    |                |
+| status         | varchar(20)   | YES  |     | NULL    |                |
++----------------+---------------+------+-----+---------+----------------+
+
+
+
+
+ desc room;
++-----------------+---------------+------+-----+---------+-------+
+| Field           | Type          | Null | Key | Default | Extra |
++-----------------+---------------+------+-----+---------+-------+
+| room_id         | int           | NO   | PRI | NULL    |       |
+| room_number     | varchar(10)   | YES  |     | NULL    |       |
+| room_type       | varchar(20)   | YES  |     | NULL    |       |
+| price_per_night | decimal(10,2) | YES  |     | NULL    |       |
+| is_available    | int           | YES  |     | NULL    |       |
++-----------------+---------------+------+-----+---------+-------+
+
+
+
+
+desc guest;
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| guest_id     | int          | NO   | PRI | NULL    |       |
+| name         | varchar(100) | YES  |     | NULL    |       |
+| email        | varchar(100) | YES  |     | NULL    |       |
+| phone_number | varchar(15)  | YES  |     | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+
+
+ desc payment;
++----------------+---------------+------+-----+---------+----------------+
+| Field          | Type          | Null | Key | Default | Extra          |
++----------------+---------------+------+-----+---------+----------------+
+| payment_id     | int           | NO   | PRI | NULL    | auto_increment |
+| booking_id     | int           | YES  | MUL | NULL    |                |
+| payment_date   | date          | YES  |     | NULL    |                |
+| amount         | decimal(10,2) | YES  |     | NULL    |                |
+| payment_method | varchar(50)   | YES  |     | NULL    |                |
++----------------+---------------+------+-----+---------+----------------+
